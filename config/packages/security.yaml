@@ -6,8 +6,7 @@ security:
                 class: App\Entity\User
                 property: username
     encoders:
-        App\Entity\User:
-            algorithm: bcrypt
+        App\Entity\User: bcrypt
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
