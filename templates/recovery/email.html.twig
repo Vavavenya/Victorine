@@ -1,0 +1,29 @@
+{% extends "base.html.twig" %}
+{% block stylesheets %}<link href="css/SumPage.css" rel="stylesheet">{% endblock %}
+{% block menu %}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Back</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="http://quiz.home/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+{% endblock %}
+{% block body %}
+    <div class="SumForm">
+        {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_errors(form.Email) }}
+            <div class="col-sm-12">
+                {{ form_label(form.Email) }}
+                {{ form_widget(form.Email, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <br>
+                <button type="submit" class="btn btn-default">Register</button>
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

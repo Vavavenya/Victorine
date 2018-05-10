@@ -62,7 +62,7 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->isActive = false;
-        $this->token = password_hash(  rand(0, 100000000) , PASSWORD_DEFAULT);
+        $this->token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
     }
@@ -87,7 +87,7 @@ class User implements UserInterface, \Serializable
         $this->email = $email;
     }
 
-    public function getToken($token)
+    public function getToken()
     {
         return $this->token;
     }
