@@ -6,8 +6,7 @@ security:
                 class: App\Entity\User
                 property: username
     encoders:
-        App\Entity\User:
-            algorithm: bcrypt
+        App\Entity\User: bcrypt
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,6 +17,9 @@ security:
             form_login:
                 login_path: login
                 check_path: login
+            logout:
+                path:   /logout
+                target: /
 
             # activate different ways to authenticate
 

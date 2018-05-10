@@ -1,0 +1,22 @@
+.lol {
+    background: #f2f2f2;
+    border-radius: 10px;
+    border:solid 2px #b3b3b3;
+    height: 170px;
+    margin: 10px;
+}
+
+.lol:hover {
+    background: #cccccc;
+}
+
+.quiz-name {
+    color: purple;
+}
+
+.quiz-date {
+}
+
+.quiz-condition {
+    color: green;
+}

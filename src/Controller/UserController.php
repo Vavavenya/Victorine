@@ -19,6 +19,7 @@ class UserController extends Controller
      */
     public function admin()
     {
+        mail('borya.bobroff2014@yandex.ru', 'My Subject', 'hi lol');
         return new Response('<html><body>Admin page!</body></html>');
     }
 }
