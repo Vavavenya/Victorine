@@ -24,15 +24,10 @@ class RecoveryPasswordController extends Controller
     /**
      * @Route("/recovery", name="recovery_password")
      */
-    public function recoveryPassword(Request $request)
+    public function recoveryPassword(Request $request, \Swift_Mailer $mailer)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        $user = $this->getUser()->getUserName();
 
-        $user = $this->getDoctrine()
-            ->getRepository(User::class)
-            ->findOneByUsername($user);
             /*->findAll();
 
         if (!$user) {
@@ -47,30 +42,45 @@ class RecoveryPasswordController extends Controller
         };*/
 
 
-        $token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
-
-        $this->getUser()->setToken($token);
-
-        $entityManager = $this->getDoctrine()->getManager();
-
-        // tells Doctrine you want to (eventually) save the Product (no queries yet)
-        $entityManager->persist($user);
-
-        // actually executes the queries (i.e. the INSERT query)
-        $entityManager->flush();
-
-        $URL = 'http://quiz.home/recovery/' . $this->getUser()->getToken();
 
 
 
-        $form = $this->createForm(RecoveryPasswordEmailType::class, $user);
+
+        $form = $this->createForm(RecoveryPasswordEmailType::class);
         $form->handleRequest($request);
 
             //форма не валидная, исправить
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->findOneByEmail($form->get('Email')->getData());
+            if (!$user) {
+                throw $this->createNotFoundException(
+                    'No product found  '.$form->get('Email')->getData()
+                );
+            }
+            $token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
+            $user->setToken($token);
+
+            $entityManager = $this->getDoctrine()->getManager();
+
+            // tells Doctrine you want to (eventually) save the Product (no queries yet)
+            $entityManager->persist($user);
+
+            // actually executes the queries (i.e. the INSERT query)
+            $entityManager->flush();
+
+            $URL = 'http://quiz.home/recovery/' . $user->getToken();
+            $message = (new \Swift_Message('Hello Email'))
+                ->setFrom('Quiz@lol.com')
+                ->setTo( $form->get('Email')->getData())
+                ->setBody($URL);
+
+            $mailer->send($message);
             return $this->render('recovery/success.html.twig');
         }
         return $this->render(
+
             'recovery/email.html.twig',
             array('form' => $form->createView()));
     }

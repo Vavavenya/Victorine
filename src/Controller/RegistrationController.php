@@ -22,7 +22,7 @@ class RegistrationController extends Controller
     /**
      * @Route("/register", name="user_registration")
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer)
     {
         // 1) build the form
         $user = new User();
@@ -42,9 +42,14 @@ class RegistrationController extends Controller
             $entityManager->flush();
 
             // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the use
+            // maybe set a "flash" success message for the
+            $URL = 'http://quiz.home/mail/' . $user->getToken();
+            $message = (new \Swift_Message('Hello Email'))
+                ->setFrom('Quiz@lol.com')
+                ->setTo($user->getEmail())
+                ->setBody($URL);
 
-
+            $mailer->send($message);
 
 
             return $this->render('registration/email.html.twig');

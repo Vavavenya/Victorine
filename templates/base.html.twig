@@ -3,7 +3,7 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="UTF-8">
-        <link href="css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <title>{% block title %}{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
     </head>
@@ -23,7 +23,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="http://quiz.home/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                 </ul>
-            {% elseif is_granted('ROLE_USER') %}
+            {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="http://quiz.home/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                 </ul>
