@@ -34,7 +34,7 @@ class EmailVerificationController extends Controller
         }
 
         $user->setToken('');
-        $user->setIsActive(true);
+        $user->setRoles('ROLE_USER');
         $entityManager->persist($user);
         $entityManager->flush();
 

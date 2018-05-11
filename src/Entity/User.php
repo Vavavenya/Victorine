@@ -29,7 +29,7 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=25, unique=true)
+     * @ORM\Column(type="string", length=25)
      */
     private $username;
 
@@ -45,19 +45,19 @@ class User implements UserInterface, \Serializable
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=254, unique=true)
+     * @ORM\Column(type="string", length=254)
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=254)
+     */
+    private $roles;
 
     /**
      * @ORM\Column(type="string", length=254, unique=true)
      */
     private $token;
-
-    /**
-     * @ORM\Column(name="is_active", type="boolean")
-     */
-    private $isActive;
 
     public function __construct()
     {
@@ -65,16 +65,6 @@ class User implements UserInterface, \Serializable
         $this->token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
-    }
-
-    public function getIsActive()
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive($isActive)
-    {
-        $this->isActive = $isActive;
     }
 
     public function getEmail()
@@ -134,9 +124,14 @@ class User implements UserInterface, \Serializable
         $this->password = $password;
     }
 
+    public function setRoles($roles)
+    {
+        $this->roles = $roles;
+    }
+
     public function getRoles()
     {
-        return array('ROLE_ADMIN');
+        return array($this->roles);
     }
 
     public function eraseCredentials()

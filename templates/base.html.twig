@@ -16,6 +16,23 @@
             <ul class="nav navbar-nav">
                 <li><a href="http://quiz.home/">Home</a></li>
             </ul>
+            {% if is_granted('ROLE_ADMIN') %}
+                <ul class="nav navbar-nav">
+                    <li><a href="http://quiz.home/">Admin Page</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://quiz.home/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                </ul>
+            {% elseif is_granted('ROLE_USER') %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://quiz.home/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="http://quiz.home/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="http://quiz.home/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+            {% endif %}
             {% block menu %}
             {% endblock %}
         </div>

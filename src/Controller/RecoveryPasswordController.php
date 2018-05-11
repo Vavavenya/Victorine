@@ -67,7 +67,7 @@ class RecoveryPasswordController extends Controller
         $form->handleRequest($request);
 
             //форма не валидная, исправить
-        if ($form->isSubmitted() /*&& $form->isValid()*/) {
+        if ($form->isSubmitted() && $form->isValid()) {
             return $this->render('recovery/success.html.twig');
         }
         return $this->render(
@@ -103,7 +103,6 @@ class RecoveryPasswordController extends Controller
             // maybe set a "flash" success message for the use
 
 
-//вернуть страницу суксесса
 
             return $this->render('recovery/success.html.twig');
         }
