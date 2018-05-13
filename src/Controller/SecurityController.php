@@ -20,12 +20,13 @@ class SecurityController extends Controller
      */
     public function login(Request $request, AuthenticationUtils $authenticationUtils)
     {
-        // get the login error if there is one
+        //получаем ошибку входа в систему, если она есть
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
+        //последнее имя пользователя
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        //страница логина
         return $this->render('security/login.html.twig', array(
             'last_username' => $lastUsername,
             'error'         => $error,

@@ -11,7 +11,6 @@ namespace App\Controller;
 
 use App\Form\UserType;
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,39 +23,64 @@ class RegistrationController extends Controller
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer)
     {
-        // 1) build the form
         $user = new User();
+
+        //форма для регистрации
         $form = $this->createForm(UserType::class, $user);
-
-        // 2) handle the submit (will only happen on POST)
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
 
-            // 3) Encode the password (you could also do this via Doctrine listener)
+        if ($form->isSubmitted() && $form->isValid()) {
+            //инкодим пороль
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            // 4) save the User!
+            // сохраняем юзера
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the
-            $URL = 'http://quiz.home/mail/' . $user->getToken();
+            //генерим письмо для верификации аккауната и отправляем
+            $URL = 'http://quiz.home/register/mail/' . $user->getToken();
             $message = (new \Swift_Message('Hello Email'))
                 ->setFrom('Quiz@lol.com')
                 ->setTo($user->getEmail())
                 ->setBody($URL);
-
             $mailer->send($message);
 
-
-            return $this->render('registration/email.html.twig');
+            //страница успешной регистрации и отправки сообщения
+            return $this->render('registration/emailsendmessage.html.twig');
         }
 
+        //странциа регистрации
         return $this->render(
             'registration/register.html.twig',
             array('form' => $form->createView()));
+    }
+
+    /**
+     * @Route("/register/mail/{slug}", name="mail_verification")
+     */
+    public function mailVerification(String $slug)
+    {
+        //получаем пользователя по токену из ссылки
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->findOneBy(['token' => $slug]);
+
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No product found for id '.$slug
+            );
+        }
+
+        //обнуляем токен и даем юзеру роль
+        $user->setToken('');
+        $user->setRoles('ROLE_USER');
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        //страница успешной верификации
+        return $this->render('registration/emailversuccess.html.twig');
     }
 }

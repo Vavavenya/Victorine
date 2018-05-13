@@ -8,9 +8,10 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 
 
 class HomePageController extends Controller
@@ -20,6 +21,7 @@ class HomePageController extends Controller
      */
     public function homePage()
     {
+        //главная страница
         return $this->render('homepage/homepage.html.twig');
     }
 }

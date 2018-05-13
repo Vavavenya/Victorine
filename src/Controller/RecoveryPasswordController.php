@@ -8,16 +8,13 @@
 
 namespace App\Controller;
 
-use App\Form\lol;
 use App\Form\RecoveryPasswordEmailType;
 use App\Form\RecoveryPasswordType;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Doctrine\ORM\Mapping as ORM;
 
 class RecoveryPasswordController extends Controller
 {
@@ -26,61 +23,38 @@ class RecoveryPasswordController extends Controller
      */
     public function recoveryPassword(Request $request, \Swift_Mailer $mailer)
     {
-
-
-            /*->findAll();
-
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for name '.$user
-            );
-        }
-        for($i=0; $i<count($user);$i++){
-            echo '<pre>';
-            echo $user[$i]->getUserName();
-            echo '</pre>';
-        };*/
-
-
-
-
-
-
+        //форма для ввода email
         $form = $this->createForm(RecoveryPasswordEmailType::class);
         $form->handleRequest($request);
-
-            //форма не валидная, исправить
         if ($form->isSubmitted() && $form->isValid()) {
+            //получаем пользователя что бы присвоить ему токен, по которому будет доступен роут
             $user = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->findOneByEmail($form->get('Email')->getData());
             if (!$user) {
                 throw $this->createNotFoundException(
-                    'No product found  '.$form->get('Email')->getData()
+                    'No user found by email'.$form->get('Email')->getData()
                 );
             }
+            //генерим токен(сделать в отдельный класс)
             $token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
             $user->setToken($token);
-
+            //присваиваем токен
             $entityManager = $this->getDoctrine()->getManager();
-
-            // tells Doctrine you want to (eventually) save the Product (no queries yet)
             $entityManager->persist($user);
-
-            // actually executes the queries (i.e. the INSERT query)
             $entityManager->flush();
-
+            //генерим и отправляем сообщения на почту
             $URL = 'http://quiz.home/recovery/' . $user->getToken();
             $message = (new \Swift_Message('Hello Email'))
                 ->setFrom('Quiz@lol.com')
                 ->setTo( $form->get('Email')->getData())
                 ->setBody($URL);
-
             $mailer->send($message);
-            return $this->render('recovery/success.html.twig');
+            //страница успешного отправления сообщения
+            return $this->render('recovery/emailsendmessage.html.twig');
         }
+        //страница с формой email
         return $this->render(
-
             'recovery/email.html.twig',
             array('form' => $form->createView()));
     }
@@ -90,40 +64,36 @@ class RecoveryPasswordController extends Controller
      */
     public function recoveryPasswordForm( Request $request, UserPasswordEncoderInterface $passwordEncoder,String $slug)
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        //получаем пользователя по токену из ссылки
         $user = $this->getDoctrine()
             ->getRepository(User::class)
             ->findOneBy(['token' => $slug]);
+
+        //форма для ввода нового пороля
         $form = $this->createForm(RecoveryPasswordType::class, $user);
         $form->handleRequest($request);
 
-
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // 3) Encode the password (you could also do this via Doctrine listener)
+            //инкодим пороль
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
-
-            // 4) save the User!
+            $user->setToken('');
+            //сохраняем пороль и обнуляем токен
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // ... do any other work - like sending them an email, etc
-            // maybe set a "flash" success message for the use
-
-
-
+            //страница успешной смены пороля
             return $this->render('recovery/success.html.twig');
         }
+
         if (!$user) {
             throw $this->createNotFoundException(
-                'No product found for id '.$slug
+                'No user found by token '.$slug
             );
         }
-        $entityManager->persist($user);
-        $entityManager->flush();
 
+        //страница смены пороля
         return $this->render(
             'recovery/recoverypassword.html.twig',
             array('form' => $form->createView()));
