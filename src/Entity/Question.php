@@ -24,18 +24,18 @@ class Question
     private $text;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="no")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="questions")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $id_quiz;
+    private $quiz;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="id_question")
+     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="question")
      */
     private $answers;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="id_question")
+     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="question")
      */
     private $players;
 
@@ -62,14 +62,14 @@ class Question
         return $this;
     }
 
-    public function getIdQuiz(): ?Quiz
+    public function getQuiz(): ?Quiz
     {
-        return $this->id_quiz;
+        return $this->quiz;
     }
 
-    public function setIdQuiz(?Quiz $id_quiz): self
+    public function setQuiz(?Quiz $quiz): self
     {
-        $this->id_quiz = $id_quiz;
+        $this->quiz = $quiz;
 
         return $this;
     }
@@ -86,7 +86,7 @@ class Question
     {
         if (!$this->answers->contains($answer)) {
             $this->answers[] = $answer;
-            $answer->setIdQuestion($this);
+            $answer->setQuestion($this);
         }
 
         return $this;
@@ -97,8 +97,8 @@ class Question
         if ($this->answers->contains($answer)) {
             $this->answers->removeElement($answer);
             // set the owning side to null (unless already changed)
-            if ($answer->getIdQuestion() === $this) {
-                $answer->setIdQuestion(null);
+            if ($answer->getQuestion() === $this) {
+                $answer->setQuestion(null);
             }
         }
 
@@ -117,7 +117,7 @@ class Question
     {
         if (!$this->players->contains($player)) {
             $this->players[] = $player;
-            $player->setIdQuestion($this);
+            $player->setQuestion($this);
         }
 
         return $this;
@@ -128,8 +128,8 @@ class Question
         if ($this->players->contains($player)) {
             $this->players->removeElement($player);
             // set the owning side to null (unless already changed)
-            if ($player->getIdQuestion() === $this) {
-                $player->setIdQuestion(null);
+            if ($player->getQuestion() === $this) {
+                $player->setQuestion(null);
             }
         }
 

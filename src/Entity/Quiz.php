@@ -19,6 +19,11 @@ class Quiz
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
      * @ORM\Column(type="boolean")
      */
     private $is_active;
@@ -29,19 +34,19 @@ class Quiz
     private $pub_date;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="id_quiz")
+     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="quiz")
      */
-    private $no;
+    private $question;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="id_quiz")
+     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="quiz")
      */
     private $players;
 
     public function __construct()
     {
-        $this->no = new ArrayCollection();
         $this->players = new ArrayCollection();
+        $this->questions = new ArrayCollection();
     }
 
     public function getId()
@@ -61,6 +66,18 @@ class Quiz
         return $this;
     }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function getPubDate(): ?\DateTimeInterface
     {
         return $this->pub_date;
@@ -76,28 +93,28 @@ class Quiz
     /**
      * @return Collection|Question[]
      */
-    public function getNo(): Collection
+    public function getQuestion(): Collection
     {
-        return $this->no;
+        return $this->question;
     }
 
-    public function addNo(Question $no): self
+    public function addQuestion(Question $question): self
     {
-        if (!$this->no->contains($no)) {
-            $this->no[] = $no;
-            $no->setIdQuiz($this);
+        if (!$this->question->contains($question)) {
+            $this->question[] = $question;
+            $question->setQuiz($this);
         }
 
         return $this;
     }
 
-    public function removeNo(Question $no): self
+    public function removeQuestion(Question $question): self
     {
-        if ($this->no->contains($no)) {
-            $this->no->removeElement($no);
+        if ($this->question->contains($question)) {
+            $this->question->removeElement($question);
             // set the owning side to null (unless already changed)
-            if ($no->getIdQuiz() === $this) {
-                $no->setIdQuiz(null);
+            if ($question->getQuiz() === $this) {
+                $question->setQuiz(null);
             }
         }
 
@@ -116,7 +133,7 @@ class Quiz
     {
         if (!$this->players->contains($player)) {
             $this->players[] = $player;
-            $player->setIdQuiz($this);
+            $player->setQuiz($this);
         }
 
         return $this;
@@ -127,8 +144,8 @@ class Quiz
         if ($this->players->contains($player)) {
             $this->players->removeElement($player);
             // set the owning side to null (unless already changed)
-            if ($player->getIdQuiz() === $this) {
-                $player->setIdQuiz(null);
+            if ($player->getQuiz() === $this) {
+                $player->setQuiz(null);
             }
         }
 

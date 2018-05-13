@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+{% block stylesheets %}<link href="css/QuizGamePage.css" rel="stylesheet">{% endblock %}
+{% block menu %}
+{% endblock %}
+{% block body %}
+    <div class="container">
+        {{ quiz.name }}
+        <br>
+        <br>
+        {{ question.text }}
+        <br>
+        <br>
+        <div class="row">
+            {% for oneanswer in answer %}
+                <div class="quiz-block col-md-3">
+                    {{ oneanswer.text }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+
+

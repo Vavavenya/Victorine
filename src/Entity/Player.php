@@ -17,58 +17,42 @@ class Player
     private $id;
 
     /**
-     * @ORM\Column(type="time")
-     */
-    private $time;
-
-    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="players")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $id_quiz;
+    private $quiz;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="players")
+     *
      */
-    private $id_question;
+    private $question;
 
     public function getId()
     {
         return $this->id;
     }
 
-    public function getTime(): ?\DateTimeInterface
+    public function getQuiz(): ?Quiz
     {
-        return $this->time;
+        return $this->quiz;
     }
 
-    public function setTime(\DateTimeInterface $time): self
+    public function setQuiz(?Quiz $quiz): self
     {
-        $this->time = $time;
+        $this->quiz = $quiz;
 
         return $this;
     }
 
-    public function getIdQuiz(): ?Quiz
+    public function getQuestion(): ?Question
     {
-        return $this->id_quiz;
+        return $this->question;
     }
 
-    public function setIdQuiz(?Quiz $id_quiz): self
+    public function setQuestion(?Question $question): self
     {
-        $this->id_quiz = $id_quiz;
-
-        return $this;
-    }
-
-    public function getIdQuestion(): ?Question
-    {
-        return $this->id_question;
-    }
-
-    public function setIdQuestion(?Question $id_question): self
-    {
-        $this->id_question = $id_question;
+        $this->question = $question;
 
         return $this;
     }

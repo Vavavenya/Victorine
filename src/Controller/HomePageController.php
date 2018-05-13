@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 
+use App\Entity\Quiz;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -21,7 +22,16 @@ class HomePageController extends Controller
      */
     public function homePage()
     {
+        $quiz = $this->getDoctrine()
+            ->getRepository(Quiz::class)
+            ->findAll();
+        if (!$quiz) {
+        throw $this->createNotFoundException(
+        'No user found for name '.$quiz
+        );
+        }
         //главная страница
-        return $this->render('homepage/homepage.html.twig');
+        return $this->render('homepage/homepage.html.twig',
+                                array('quiz' => $quiz));
     }
 }

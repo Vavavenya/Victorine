@@ -22,10 +22,15 @@ class Answer
     private $text;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_right;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answers")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $id_question;
+    private $question;
 
     public function getId()
     {
@@ -44,14 +49,27 @@ class Answer
         return $this;
     }
 
-    public function getIdQuestion(): ?Question
+    public function getIsRight(): ?bool
     {
-        return $this->id_question;
+        return $this->is_right;
     }
 
-    public function setIdQuestion(?Question $id_question): self
+    public function setIsActive(bool $is_right): self
     {
-        $this->id_question = $id_question;
+        $this->is_right = $is_right;
+
+        return $this;
+    }
+
+
+    public function getQuestion(): ?Question
+    {
+        return $this->question;
+    }
+
+    public function setQuestion(?Question $question): self
+    {
+        $this->question = $question;
 
         return $this;
     }

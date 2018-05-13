@@ -30,6 +30,12 @@ class RegistrationController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $nextAction = $form->get('saveAndAdd')->isClicked()
+                ? 'task_new'
+                : 'task_success';
+            echo "<pre>";
+            var_dump($nextAction);
+            echo "</pre>";
             //инкодим пороль
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
@@ -48,7 +54,7 @@ class RegistrationController extends Controller
             $mailer->send($message);
 
             //страница успешной регистрации и отправки сообщения
-            return $this->render('registration/emailsendmessage.html.twig');
+           // return $this->render('registration/emailsendmessage.html.twig');
         }
 
         //странциа регистрации
