@@ -28,14 +28,8 @@ class RegistrationController extends Controller
         //форма для регистрации
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $nextAction = $form->get('saveAndAdd')->isClicked()
-                ? 'task_new'
-                : 'task_success';
-            echo "<pre>";
-            var_dump($nextAction);
-            echo "</pre>";
+
             //инкодим пороль
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);

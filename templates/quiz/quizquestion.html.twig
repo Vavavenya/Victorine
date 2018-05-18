@@ -11,14 +11,25 @@
         <br>
         <br>
         <div class="row">
-            {% for oneanswer in answer %}
-                <div class="quiz-block col-md-3">
-                    {{ oneanswer.text }}
+            {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_errors(form.users) }}
+                <div class="col-sm-12">
+                    {{ form_label(form.users ) }}
+                    {{ form_widget(form.users, { 'attr': {'class': 'form-control'} }) }}
                 </div>
-            {% endfor %}
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <br>
+                    <button type="submit" class="btn btn-default">Jndtnbnm</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
+{% block javascripts %}<script src="js/lol.js"></script>{% endblock %}
 
 
 

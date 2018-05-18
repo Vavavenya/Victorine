@@ -24,20 +24,27 @@ class Question
     private $text;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $num;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Quiz", inversedBy="questions")
      * @ORM\JoinColumn(nullable=false)
      */
     private $quiz;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="question", fetch="EAGER")
      */
     private $answers;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="question")
+     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="question", fetch="EAGER")
      */
     private $players;
+
+
 
     public function __construct()
     {
@@ -58,6 +65,18 @@ class Question
     public function setText(string $text): self
     {
         $this->text = $text;
+
+        return $this;
+    }
+
+    public function getNum(): ?int
+    {
+        return $this->num;
+    }
+
+    public function setNum(int $num): self
+    {
+        $this->num = $num;
 
         return $this;
     }

@@ -24,9 +24,26 @@ class Player
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="players")
-     *
+     * @ORM\JoinColumn(nullable=false)
      */
     private $question;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Answer", inversedBy="players")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $answer;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="players")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $time;
 
     public function getId()
     {
@@ -53,6 +70,42 @@ class Player
     public function setQuestion(?Question $question): self
     {
         $this->question = $question;
+
+        return $this;
+    }
+
+    public function getAnswer(): ?Answer
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(?Answer $answer): self
+    {
+        $this->answer = $answer;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTime(): ?\DateTimeInterface
+    {
+        return $this->time;
+    }
+
+    public function setTime(\DateTimeInterface $time): self
+    {
+        $this->time = $time;
 
         return $this;
     }
