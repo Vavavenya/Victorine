@@ -8,6 +8,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Leaders;
 use App\Entity\Player;
 use App\Entity\Question;
 use App\Entity\Quiz;
@@ -30,19 +31,38 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class QuizGameController extends Controller
 {
     /**
-     * @Route("/quiz/{id}/{slug}", name="quiz_game")
+     * @Route("/quiz/{id}/{slug}", name="quiz_game", requirements={"id"="\d+","slug"="\d+"})
      */
     public function QuizPage($id, $slug,Request $request)
     {
         $quiz = $this->getDoctrine()
             ->getRepository(Quiz::class)
             ->find($id);
+        if (!$quiz) {
+            throw $this->createNotFoundException('No quiz found' );
+        };
+        if ($quiz->getIsActive()==false) {
+            throw $this->createNotFoundException('quiz was disable' );
+        };
         $question= $quiz->getQuestion()[$slug];
         if (!$question) {
             return $this->render('recovery/success.html.twig');
         }
         $allanswer=$question->getAnswers();
-            $allplayer= $question->getPlayers();
+        $allplayer= $question->getPlayers();
+        $allleader= $quiz->getLeaders();
+        if ($allplayer->isEmpty() == true) {
+            $leader = new Leaders();
+            $leader->setQuiz($quiz)
+                ->setUser($this->getUser());
+        }
+            foreach ($allleader as $leader) {
+                if ($leader->getUser()->getId() == $this->getUser()->getId()) {
+                    break;
+                }
+            }
+
+        //возможно можно лучше
             if ($allplayer->isEmpty() == false) {
                 foreach ($allplayer as $oneplayer) {
                     if ($oneplayer->getUser()->getId() == $this->getUser()->getId() ) {
@@ -51,29 +71,42 @@ class QuizGameController extends Controller
                     }
                 }
             }
-            $task=new Answer();
-        $form = $this->createForm(AnswerType::class, array('id' => $id,'slug' => $slug));
+        $form = $this->createForm(AnswerType::class, null , ['id' => $question->getId()]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityObject = $form->get('users')->getData()->getId();
+
+            $entityObject = $form->get('answers')->getData()->getId();
             $time='15:15';
 
+            //возможно можно лучше
             foreach ($allanswer as $answer){
                     if ($answer->getId()==$entityObject) {
                         break;
                     }
             }
-
-            $player=new Player();
-            $player->setQuiz($quiz)
+            if ($form->get('next')->isClicked()) {
+                $player=new Player();
+                $player->setQuiz($quiz)
                     ->setQuestion($question)
                     ->setAnswer($answer)
                     ->setTime(\DateTime::createFromFormat('H:i', $time))
                     ->setUser($this->getUser());
+                if ($player->getAnswer()->getIsRight()==true) {
+                    $leader->setAnswered(($leader->getAnswered()+1))
+                        ->setCorrect(($leader->getCorrect()+1));
+                } else {
+                    $leader->setAnswered(($leader->getAnswered()+1));
+                }
 
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($player);
-            $entityManager->flush();
+
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->persist($player);
+                $entityManager->persist($leader);
+                $entityManager->flush();
+
+                return $this->render('quiz/questioniscorrect.html.twig',
+                    array('answer' => $answer));
+            }
 
             $slug++;
             return $this->redirectToRoute('quiz_question', array('id' => $id,'slug' => $slug));

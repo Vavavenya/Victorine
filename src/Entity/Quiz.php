@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OrderBy;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\QuizRepository")
@@ -43,6 +44,12 @@ class Quiz
      */
     private $players;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Leaders", mappedBy="quiz")
+     *  @OrderBy({"correct" = "DESC"})
+     */
+    private $leaders;
+
 
 
 
@@ -50,6 +57,7 @@ class Quiz
     {
         $this->players = new ArrayCollection();
         $this->questions = new ArrayCollection();
+        $this->leaders = new ArrayCollection();
     }
 
     public function getId()
@@ -149,6 +157,37 @@ class Quiz
             // set the owning side to null (unless already changed)
             if ($player->getQuiz() === $this) {
                 $player->setQuiz(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Leaders[]
+     */
+    public function getLeaders(): Collection
+    {
+        return $this->leaders;
+    }
+
+    public function addLeader(Leaders $leader): self
+    {
+        if (!$this->leaders->contains($leader)) {
+            $this->leaders[] = $leader;
+            $leader->setQuiz($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLeader(Leaders $leader): self
+    {
+        if ($this->leaders->contains($leader)) {
+            $this->leaders->removeElement($leader);
+            // set the owning side to null (unless already changed)
+            if ($leader->getQuiz() === $this) {
+                $leader->setQuiz(null);
             }
         }
 

@@ -20,6 +20,12 @@ class SecurityController extends Controller
      */
     public function login(Request $request, AuthenticationUtils $authenticationUtils)
     {
+        //проверка на залогиненость
+        if ($this->getUser()) {
+            throw $this->createNotFoundException(
+                'no access'
+            );
+        }
         //получаем ошибку входа в систему, если она есть
         $error = $authenticationUtils->getLastAuthenticationError();
 

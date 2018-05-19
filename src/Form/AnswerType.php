@@ -13,7 +13,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Repository\AnswerRepository;
-use Symfony\Component\Form\Extension\Core\Type\TimeType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class AnswerType extends AbstractType
@@ -22,16 +23,24 @@ class AnswerType extends AbstractType
     {
 
         $builder
-            ->add('users', EntityType::class, array(
+            ->add('next', SubmitType::class, array(
+                'attr' => array('class' => 'btn btn-default')))
+            ->add('answers', EntityType::class, array(
             'multiple' => false,
             'expanded' => true,
             'class' => Answer::class,
             'query_builder' => function (AnswerRepository $er) use($options) {
-                return $er->createQueryBuilder('u')
-                    ->where('u.question =1')
-                    ->orderBy('u.text', 'ASC');
+                return $er->createQueryBuilder('a')
+                    ->where('a.question = :id')
+                    ->orderBy('a.text', 'ASC')
+                    ->setParameter('id', $options['id']);
             },
             'choice_label' => 'text',
         ));
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setRequired(['id']);
     }
 }

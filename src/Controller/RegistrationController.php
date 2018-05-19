@@ -23,6 +23,12 @@ class RegistrationController extends Controller
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer)
     {
+        //проверка на залогиненость
+        if ($this->getUser()) {
+            throw $this->createNotFoundException(
+                'no access'
+            );
+        }
         $user = new User();
 
         //форма для регистрации

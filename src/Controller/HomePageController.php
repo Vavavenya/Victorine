@@ -27,10 +27,10 @@ class HomePageController extends Controller
             ->findAll();
         if (!$quiz) {
         throw $this->createNotFoundException(
-        'No quiz found for name '.$quiz
+        'No quiz found'
         );
         }
         //главная страница
-        return $this->render('homepage/homepage.html.twig', array('quiz' => $quiz));
+        return $this->render('homepage/homepage.html.twig', array('quiz' => $quiz,'leaders' => $quiz[0]->getLeaders() ));
     }
 }

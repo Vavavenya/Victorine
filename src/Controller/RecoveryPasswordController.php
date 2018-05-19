@@ -23,6 +23,12 @@ class RecoveryPasswordController extends Controller
      */
     public function recoveryPassword(Request $request, \Swift_Mailer $mailer)
     {
+        //проверка на залогиненость
+        if ($this->getUser()) {
+            throw $this->createNotFoundException(
+                'no access'
+            );
+        }
         //форма для ввода email
         $form = $this->createForm(RecoveryPasswordEmailType::class);
         $form->handleRequest($request);
@@ -43,7 +49,7 @@ class RecoveryPasswordController extends Controller
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
-            //генерим и отправляем сообщения на почту
+            //генерим и отправляем сообщения на почту(d jnltkmye. aeyrwb.)
             $URL = 'http://quiz.home/recovery/' . $user->getToken();
             $message = (new \Swift_Message('Hello Email'))
                 ->setFrom('Quiz@lol.com')

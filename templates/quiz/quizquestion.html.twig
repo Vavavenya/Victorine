@@ -13,16 +13,16 @@
         <div class="row">
             {{ form_start(form) }}
             <div class="form-group">
-                {{ form_errors(form.users) }}
+                {{ form_errors(form.answers) }}
                 <div class="col-sm-12">
-                    {{ form_label(form.users ) }}
-                    {{ form_widget(form.users, { 'attr': {'class': 'form-control'} }) }}
+                    {{ form_label(form.answers ) }}
+                    {{ form_widget(form.answers, { 'attr': {'class': 'form-control'} }) }}
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-12">
                     <br>
-                    <button type="submit" class="btn btn-default">Jndtnbnm</button>
+                    {{ form_widget(form.next, { 'label': 'next'})}}
                 </div>
             </div>
             {{ form_end(form) }}

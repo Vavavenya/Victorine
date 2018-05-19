@@ -9,6 +9,8 @@
                     <div class="quiz-block col-md-3">
                         {{ onequiz.name }}
                         <br>
+                        {{ onequiz.pubdate |date("m/d/Y")}}
+                        <br>
                         {% if onequiz.isactive=='1' %}
                             Активна
                             <br>
@@ -16,6 +18,9 @@
                         {% else %}
                             Неактивна
                         {% endif %}
+
+
+                                {{ leaders[0].correct }}
 
                     </div>
 

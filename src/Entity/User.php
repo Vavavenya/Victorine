@@ -66,6 +66,11 @@ class User implements UserInterface, \Serializable
      */
     private $players;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Leaders", mappedBy="user")
+     */
+    private $leaders;
+
 
 
     public function __construct()
@@ -73,6 +78,7 @@ class User implements UserInterface, \Serializable
         $this->isActive = false;
         $this->token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
         $this->players = new ArrayCollection();
+        $this->leaders = new ArrayCollection();
         // may not be needed, see section on salt below
         // $this->salt = md5(uniqid('', true));
     }
@@ -202,6 +208,37 @@ class User implements UserInterface, \Serializable
             // set the owning side to null (unless already changed)
             if ($player->getUser() === $this) {
                 $player->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Leaders[]
+     */
+    public function getLeaders(): Collection
+    {
+        return $this->leaders;
+    }
+
+    public function addLeader(Leaders $leader): self
+    {
+        if (!$this->leaders->contains($leader)) {
+            $this->leaders[] = $leader;
+            $leader->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLeader(Leaders $leader): self
+    {
+        if ($this->leaders->contains($leader)) {
+            $this->leaders->removeElement($leader);
+            // set the owning side to null (unless already changed)
+            if ($leader->getUser() === $this) {
+                $leader->setUser(null);
             }
         }
 
