@@ -35,6 +35,11 @@ class Quiz
     private $pub_date;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $num_players;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="quiz")
      */
     private $question;
@@ -63,6 +68,18 @@ class Quiz
     public function getId()
     {
         return $this->id;
+    }
+
+    public function  getNumPlayers(): ?int
+    {
+        return $this->num_players;
+    }
+
+    public function setNumPlayers(?int $num_players): self
+    {
+        $this->num_players = $num_players;
+
+        return $this;
     }
 
     public function getIsActive(): ?bool

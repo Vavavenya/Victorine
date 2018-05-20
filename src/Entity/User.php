@@ -9,6 +9,7 @@
 namespace App\Entity;
 
 
+use App\MyClass\TokenEditor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -76,11 +77,10 @@ class User implements UserInterface, \Serializable
     public function __construct()
     {
         $this->isActive = false;
-        $this->token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
+        $tokeneditor=new TokenEditor();
+        $this->token = $tokeneditor->getToken();
         $this->players = new ArrayCollection();
         $this->leaders = new ArrayCollection();
-        // may not be needed, see section on salt below
-        // $this->salt = md5(uniqid('', true));
     }
 
     public function getId()

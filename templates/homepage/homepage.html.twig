@@ -11,6 +11,10 @@
                         <br>
                         {{ onequiz.pubdate |date("m/d/Y")}}
                         <br>
+                        {{ onequiz.leaders[0].user.username }}
+                        <br>
+                        {{ onequiz.numplayers }}
+                        <br>
                         {% if onequiz.isactive=='1' %}
                             Активна
                             <br>
@@ -20,7 +24,7 @@
                         {% endif %}
 
 
-                                {{ leaders[0].correct }}
+
 
                     </div>
 

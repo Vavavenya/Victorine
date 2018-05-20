@@ -43,7 +43,12 @@ class Player
     /**
      * @ORM\Column(type="time")
      */
-    private $time;
+    private $start_time;
+
+    /**
+     * @ORM\Column(type="time")
+     */
+    private $end_time;
 
     public function getId()
     {
@@ -98,14 +103,25 @@ class Player
         return $this;
     }
 
-    public function getTime(): ?\DateTimeInterface
+    public function getStartTime(): ?\DateTimeInterface
     {
-        return $this->time;
+        return $this->start_time;
     }
 
-    public function setTime(\DateTimeInterface $time): self
+    public function setStartTime(\DateTimeInterface $start_time): self
     {
-        $this->time = $time;
+        $this->start_time = $start_time;
+
+        return $this;
+    }
+    public function getEndTime(): ?\DateTimeInterface
+    {
+        return $this->end_time;
+    }
+
+    public function setEndTime(\DateTimeInterface $end_time): self
+    {
+        $this->end_time =  $end_time;
 
         return $this;
     }

@@ -23,10 +23,15 @@ class Leaders
     private $quiz;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="leaders")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="leaders", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\Column(type="string", length=25)
+     */
+    private $name;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -65,6 +70,16 @@ class Leaders
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setName($name)
+    {
+        $this->name = $name;
     }
 
     public function getCorrect(): ?int

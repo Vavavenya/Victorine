@@ -11,6 +11,8 @@ namespace App\Controller;
 use App\Form\RecoveryPasswordEmailType;
 use App\Form\RecoveryPasswordType;
 use App\Entity\User;
+use App\MyClass\MailSender;
+use App\MyClass\TokenEditor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,43 +25,51 @@ class RecoveryPasswordController extends Controller
      */
     public function recoveryPassword(Request $request, \Swift_Mailer $mailer)
     {
-        //проверка на залогиненость
+        //verification login
         if ($this->getUser()) {
             throw $this->createNotFoundException(
                 'no access'
             );
         }
-        //форма для ввода email
+
+        //email input form
         $form = $this->createForm(RecoveryPasswordEmailType::class);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
-            //получаем пользователя что бы присвоить ему токен, по которому будет доступен роут
+            //get the user to assign him a token on which the router will be available
             $user = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->findOneByEmail($form->get('Email')->getData());
+
             if (!$user) {
                 throw $this->createNotFoundException(
                     'No user found by email'.$form->get('Email')->getData()
                 );
             }
-            //генерим токен(сделать в отдельный класс)
-            $token = str_replace("/", "", password_hash(  rand(0, 10000) , PASSWORD_DEFAULT));
+
+            //generate token
+            $tokeneditor=new TokenEditor();
+            $token = $tokeneditor->getToken();
             $user->setToken($token);
-            //присваиваем токен
+
+            //assign a token
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
-            //генерим и отправляем сообщения на почту(d jnltkmye. aeyrwb.)
-            $URL = 'http://quiz.home/recovery/' . $user->getToken();
-            $message = (new \Swift_Message('Hello Email'))
-                ->setFrom('Quiz@lol.com')
-                ->setTo( $form->get('Email')->getData())
-                ->setBody($URL);
-            $mailer->send($message);
-            //страница успешного отправления сообщения
+
+            //generate and send messages to the mail
+            $mailsender=new MailSender();
+            $url = 'http://quiz.home/recovery/' . $user->getToken();
+            $mailsender->setText($url);
+            $mailsender-> setSendTo($form->get('Email')->getData());
+            $mailsender->sendMessage($mailer);
+
+            //page of successful message sending
             return $this->render('recovery/emailsendmessage.html.twig');
         }
-        //страница с формой email
+
+        //page with email form
         return $this->render(
             'recovery/email.html.twig',
             array('form' => $form->createView()));
@@ -70,28 +80,10 @@ class RecoveryPasswordController extends Controller
      */
     public function recoveryPasswordForm( Request $request, UserPasswordEncoderInterface $passwordEncoder,String $slug)
     {
-        //получаем пользователя по токену из ссылки
+        //get the user token from the link
         $user = $this->getDoctrine()
             ->getRepository(User::class)
             ->findOneBy(['token' => $slug]);
-
-        //форма для ввода нового пороля
-        $form = $this->createForm(RecoveryPasswordType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            //инкодим пороль
-            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
-            $user->setPassword($password);
-            $user->setToken('');
-            //сохраняем пороль и обнуляем токен
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            //страница успешной смены пороля
-            return $this->render('recovery/success.html.twig');
-        }
 
         if (!$user) {
             throw $this->createNotFoundException(
@@ -99,7 +91,26 @@ class RecoveryPasswordController extends Controller
             );
         }
 
-        //страница смены пороля
+        //a form for entering a new password
+        $form = $this->createForm(RecoveryPasswordType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            //encode password
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
+            $user->setToken('');
+
+            //save the password and reset the token
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            //successful password change page
+            return $this->render('recovery/success.html.twig');
+        }
+
+        //password change page
         return $this->render(
             'recovery/recoverypassword.html.twig',
             array('form' => $form->createView()));
