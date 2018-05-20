@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends Controller
 {
     /**
-     * @Route("/admin")
+     * @Route("/admin123")
      */
     public function admin()
     {
