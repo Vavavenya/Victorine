@@ -4,4 +4,6 @@
 logout:
     path: /logout
 homepage:
-    path: /homepage
+    path: /
+quiz_question:
+    path: /quiz/{id}/{slug}

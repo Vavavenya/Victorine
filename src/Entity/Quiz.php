@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OrderBy;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\QuizRepository")
@@ -19,6 +20,11 @@ class Quiz
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
+
+    /**
      * @ORM\Column(type="boolean")
      */
     private $is_active;
@@ -29,24 +35,51 @@ class Quiz
     private $pub_date;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="id_quiz")
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $no;
+    private $num_players;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="id_quiz")
+     * @ORM\OneToMany(targetEntity="App\Entity\Question", mappedBy="quiz")
+     */
+    private $question;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="quiz")
      */
     private $players;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Leaders", mappedBy="quiz")
+     *  @OrderBy({"correct" = "DESC"})
+     */
+    private $leaders;
+
+
+
+
     public function __construct()
     {
-        $this->no = new ArrayCollection();
         $this->players = new ArrayCollection();
+        $this->questions = new ArrayCollection();
+        $this->leaders = new ArrayCollection();
     }
 
     public function getId()
     {
         return $this->id;
+    }
+
+    public function  getNumPlayers(): ?int
+    {
+        return $this->num_players;
+    }
+
+    public function setNumPlayers(?int $num_players): self
+    {
+        $this->num_players = $num_players;
+
+        return $this;
     }
 
     public function getIsActive(): ?bool
@@ -57,6 +90,18 @@ class Quiz
     public function setIsActive(bool $is_active): self
     {
         $this->is_active = $is_active;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -76,28 +121,28 @@ class Quiz
     /**
      * @return Collection|Question[]
      */
-    public function getNo(): Collection
+    public function getQuestion(): Collection
     {
-        return $this->no;
+        return $this->question;
     }
 
-    public function addNo(Question $no): self
+    public function addQuestion(Question $question): self
     {
-        if (!$this->no->contains($no)) {
-            $this->no[] = $no;
-            $no->setIdQuiz($this);
+        if (!$this->question->contains($question)) {
+            $this->question[] = $question;
+            $question->setQuiz($this);
         }
 
         return $this;
     }
 
-    public function removeNo(Question $no): self
+    public function removeQuestion(Question $question): self
     {
-        if ($this->no->contains($no)) {
-            $this->no->removeElement($no);
+        if ($this->question->contains($question)) {
+            $this->question->removeElement($question);
             // set the owning side to null (unless already changed)
-            if ($no->getIdQuiz() === $this) {
-                $no->setIdQuiz(null);
+            if ($question->getQuiz() === $this) {
+                $question->setQuiz(null);
             }
         }
 
@@ -116,7 +161,7 @@ class Quiz
     {
         if (!$this->players->contains($player)) {
             $this->players[] = $player;
-            $player->setIdQuiz($this);
+            $player->setQuiz($this);
         }
 
         return $this;
@@ -127,8 +172,39 @@ class Quiz
         if ($this->players->contains($player)) {
             $this->players->removeElement($player);
             // set the owning side to null (unless already changed)
-            if ($player->getIdQuiz() === $this) {
-                $player->setIdQuiz(null);
+            if ($player->getQuiz() === $this) {
+                $player->setQuiz(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Leaders[]
+     */
+    public function getLeaders(): Collection
+    {
+        return $this->leaders;
+    }
+
+    public function addLeader(Leaders $leader): self
+    {
+        if (!$this->leaders->contains($leader)) {
+            $this->leaders[] = $leader;
+            $leader->setQuiz($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLeader(Leaders $leader): self
+    {
+        if ($this->leaders->contains($leader)) {
+            $this->leaders->removeElement($leader);
+            // set the owning side to null (unless already changed)
+            if ($leader->getQuiz() === $this) {
+                $leader->setQuiz(null);
             }
         }
 

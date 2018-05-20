@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,10 +24,25 @@ class Answer
     private $text;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_right;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answers")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $id_question;
+    private $question;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Player", mappedBy="answer")
+     */
+    private $players;
+
+    public function __construct()
+    {
+        $this->players = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -44,14 +61,58 @@ class Answer
         return $this;
     }
 
-    public function getIdQuestion(): ?Question
+    public function getIsRight(): ?bool
     {
-        return $this->id_question;
+        return $this->is_right;
     }
 
-    public function setIdQuestion(?Question $id_question): self
+    public function setIsActive(bool $is_right): self
     {
-        $this->id_question = $id_question;
+        $this->is_right = $is_right;
+
+        return $this;
+    }
+
+
+    public function getQuestion(): ?Question
+    {
+        return $this->question;
+    }
+
+    public function setQuestion(?Question $question): self
+    {
+        $this->question = $question;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Player[]
+     */
+    public function getPlayers(): Collection
+    {
+        return $this->players;
+    }
+
+    public function addPlayer(Player $player): self
+    {
+        if (!$this->players->contains($player)) {
+            $this->players[] = $player;
+            $player->setAnswer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlayer(Player $player): self
+    {
+        if ($this->players->contains($player)) {
+            $this->players->removeElement($player);
+            // set the owning side to null (unless already changed)
+            if ($player->getAnswer() === $this) {
+                $player->setAnswer(null);
+            }
+        }
 
         return $this;
     }

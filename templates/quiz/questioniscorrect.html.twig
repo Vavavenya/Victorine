@@ -1,0 +1,27 @@
+{% extends "base.html.twig" %}
+{% block stylesheets %}<link href="css/QuizGamePage.css" rel="stylesheet">{% endblock %}
+{% block menu %}
+{% endblock %}
+{% block body %}
+    {% if answer.isright == true %}
+        <h1 class=" text-center">Correct</h1>
+    {% else %}
+        <h1 class=" text-center">Incorrect</h1>
+    {% endif %}
+    <div class="container">
+        <div class="row">
+            <form>
+                <div class="form-group">
+                    <div class="col-sm-12 text-center">
+                        <button type="submit" class="btn btn-default">Ok</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}<script src="js/lol.js"></script>{% endblock %}
+
+
+
+

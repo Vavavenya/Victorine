@@ -1,7 +1,34 @@
 {% extends "base.html.twig" %}
-{% block stylesheets %}<link href="css/RegisterPage.css" rel="stylesheet">{% endblock %}
+{% block stylesheets %}<link href="css/HomePage.css" rel="stylesheet">{% endblock %}
 {% block menu %}
 {% endblock %}
 {% block body %}
-    <h2 class="text-center">ljv</h2>
+        <div class="container">
+            <div class="row">
+                {% for onequiz in quiz %}
+                    <div class="quiz-block col-md-3">
+                        {{ onequiz.name }}
+                        <br>
+                        {{ onequiz.pubdate |date("m/d/Y")}}
+                        <br>
+                        {{ onequiz.leaders[0].user.username }}
+                        <br>
+                        {{ onequiz.numplayers }}
+                        <br>
+                        {% if onequiz.isactive=='1' %}
+                            Активна
+                            <br>
+                            <a class="btn btn-default" href="http://quiz.home/quiz/{{ onequiz.id }}/0">Играть</a>
+                        {% else %}
+                            Неактивна
+                        {% endif %}
+
+
+
+
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
 {% endblock %}
